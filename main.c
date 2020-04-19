@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
 		FILE *ef = fopen("tmp.c", "w");
 		char *code = readfile(f);
 
-		fputs("#include <stdio.h>\nint main(){int i = 0;char arr[30000];memset(arr, 0, sizeof(arr));", ef);
+		fputs("#include <stdio.h>\n#include <string.h>\nint main(){int i = 0;char arr[30000];memset(arr, 0, sizeof(arr));", ef);
 		run(code, ef);
 		fputs("return 0;}", ef);
 
