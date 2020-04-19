@@ -5,23 +5,13 @@ void error(char *s) {
 		fprintf(stderr, "%s", s);
 		exit(1);
 }
-
 char * readfile(FILE *f) {
-		int max = 10;
-		char *m = malloc(max);
-		int i = 0;
-		char c = fgetc(f);
-		while(!feof(f)) {
-				if(i == (max - 1)) {
-						max *= 1.5;
-						m = realloc(m, max);
-				}
-				m[i] = c;
-				c = fgetc(f);
-				i++;
-		}
-
-		return m;
+	fseek(f, 0L, SEEK_END);
+	int size = ftell(f);
+	fseek(f, 0L, SEEK_SET);
+	char *ret = malloc(size);
+	fread(ret, 1, size, f);
+	return ret;
 }
 
 void run(char *s, FILE *f) {
