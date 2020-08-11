@@ -1,11 +1,9 @@
 # brainfuck2c
-Транслятор Brainfuck в C
+Транслятор Brainfuck в C. Теперь умеет оптимизировать код.
 ## Сборка
 ```
-gcc main.c -o bfc
+$CC main.c -o brainfuck2c
 ```
 ## Использование
 ```
-./bfc <filename>
-```
-### BFC нужен компилятор GCC
+./brainfuck2c <brainfuck source> <output file>

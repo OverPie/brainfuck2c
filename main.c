@@ -14,36 +14,70 @@ char * readfile(FILE *f) {
 	return ret;
 }
 
-void run(char *s, FILE *f) {
-		int i = 0;
-		while(s[i]) {
-				if(s[i] == '>') {
-						fputs("i++;", f);
-				} else if(s[i] == '<') {
-						fputs("i--;", f);
-				} else if(s[i] == '+') {
-						fputs("arr[i]++;", f);
-				} else if(s[i] == '-') {
-						fputs("arr[i]--;", f);
-				} else if(s[i] == '.') {
-						fputs("putchar(arr[i]);", f);
-				} else if(s[i] == ',') {
-						fputs("arr[i] = getchar();", f);
-				} else if(s[i] == '[') {
-						fputs("while(arr[i]) {", f);
-				} else if(s[i] == ']') {
-						fputs("}", f);
-				}
+void write(FILE *f, size_t j, char operator) {
+	switch(operator) {
+		case '>':
+			fprintf(f, "i+=%zu;", j);
+		break;
+		case '<':
+			fprintf(f, "i-=%zu;", j);
+		break;
+		case '+':
+			fprintf(f, "arr[i]+=%zu;", j);
+		break;
+		case '-':
+			fprintf(f, "arr[i]-=%zu;", j);
+		break;
+		case '.':
+			for(size_t i = 0; i < j; i++)
+				fprintf(f, "putchar(arr[i]);");
+		break;
+		case ',':
+			for(size_t i = 0; i < j; i++)
+				fprintf(f, "arr[i] = getchar();");
+		break;
+		case '[':
+			for(size_t i = 0; i < j; i++)
+				fprintf(f, "while(arr[i]) {");
+		break;
+		case ']':
+			for(size_t i = 0; i < j; i++)
+				fprintf(f, "}");
+	}
+}
 
-				i++;
+void run(char *s, FILE *f) {
+		size_t i = 0;
+		char operator = '\0';
+
+		size_t j = 0;
+
+		while(s[i]) {
+			if(s[i] != operator) {
+				write(f, j, operator);
+
+				j = 0;
+
+				//i++;
+			}
+
+			operator = s[i];
+
+			i++;
+			j++;
 		}
 }
 
 int main(int argc, char *argv[]) {
-		if(argc == 1) error("filename missing");
+		if(argc < 3) {
+			printf("usage: %s <brainfuck source> <output file>\n", argv[0]);
+
+			exit(1);
+		}
+
 		FILE *f = fopen(argv[1], "r");
 		if(!f) error("no such file");
-		FILE *ef = fopen("tmp.c", "w");
+		FILE *ef = fopen(argv[2], "w");
 		char *code = readfile(f);
 
 		fputs("#include <stdio.h>\n#include <string.h>\nint main(){int i = 0;char arr[30000];memset(arr, 0, sizeof(arr));", ef);
@@ -53,7 +87,5 @@ int main(int argc, char *argv[]) {
 		free(code);
 		fclose(f);
 		fclose(ef);
-		system("gcc tmp.c -o bf");
-		remove("tmp.c");
 		return 0;
 }
